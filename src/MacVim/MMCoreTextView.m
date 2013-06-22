@@ -556,6 +556,8 @@ defaultAdvanceForFont(NSFont *font)
 
 - (void)drawRect:(NSRect)rect
 {
+    [self clearCorner];
+    
     NSGraphicsContext *context = [NSGraphicsContext currentContext];
     [context setShouldAntialias:antialias];
 
@@ -1333,6 +1335,25 @@ recurseDraw(const unichar *chars, CGGlyph *glyphs, CGSize *advances,
     CGContextFillRect(cgctx, *(CGRect*)&rect);
 
     CGContextRestoreGState(cgctx);
+}
+
+// Custom
+- (void)clearCorner
+{
+    CGContextRef context = [[NSGraphicsContext currentContext] graphicsPort];
+    float r = [defaultBackgroundColor redComponent];
+    float g = [defaultBackgroundColor greenComponent];
+    float b = [defaultBackgroundColor blueComponent];
+    float a = [defaultBackgroundColor alphaComponent];
+    
+    NSRect left = NSMakeRect(0, 0, 5, 5);
+    NSRect right = NSMakeRect(self.bounds.size.width - 5, 0, 5, 5);
+    
+    CGContextSetBlendMode(context, kCGBlendModeCopy);
+    CGContextSetRGBFillColor(context, r, g, b, a);
+    CGContextFillRect(context, *(CGRect*)&left);
+    CGContextFillRect(context, *(CGRect*)&right);
+    CGContextSetBlendMode(context, kCGBlendModeNormal);
 }
 
 @end // MMCoreTextView (Drawing)
